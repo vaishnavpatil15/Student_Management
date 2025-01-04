@@ -1,29 +1,31 @@
 const db = require('../models/db');
+const helpers = require('../service/helper');
 
 // Add Department
 exports.addDept = (req, res) => {
-    const { name,info } = req.body;
+    const { name, info } = req.body;
     const query = "INSERT INTO department (name,info,created_at) VALUES (?,?,?)";
-    db.query(query, [name,info,new Date()], (err, result) => {
+    db.query(query, [name, info, new Date()], (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
         res.status(201).json({ message: "Department added successfully", deptId: result.insertId });
     });
 };
 
-exports.getDept = (req, res) => {
-    console.log(`Request for get department using dept id` + req.params.id );
+exports.getDept = async (req, res) => {
+    console.log(`Request for get department using dept id` + req.params.id);
     const { id } = req.params;
-    const query = "SELECT * FROM department WHERE id = ?";
-    db.query(query, [id], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.status(200).json({ data: result });
-    });
+    try {
+        let result = await helpers.getObjectUsingId('department', id);
+        return res.status(200).json({ data: result });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
 };
 
 exports.getAllDept = (req, res) => {
     const query = "SELECT * FROM department";
     console.log("Request to get all depts");
-    
+
     db.query(query, (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
         res.status(200).json({ data: result });
