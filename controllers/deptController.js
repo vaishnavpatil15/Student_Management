@@ -3,8 +3,8 @@ const db = require('../models/db');
 // Add Department
 exports.addDept = (req, res) => {
     const { name,info } = req.body;
-    const query = "INSERT INTO department (name,info) VALUES (?,?)";
-    db.query(query, [name.info], (err, result) => {
+    const query = "INSERT INTO department (name,info,created_at) VALUES (?,?,?)";
+    db.query(query, [name,info,new Date()], (err, result) => {
         if (err) return res.status(500).json({ error: err.message });
         res.status(201).json({ message: "Department added successfully", deptId: result.insertId });
     });
