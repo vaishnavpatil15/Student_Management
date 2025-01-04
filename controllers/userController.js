@@ -4,7 +4,7 @@ exports.createUser = (req, res) => {
     try {
         let { f_name, l_name, user_id, dept_id, password } = req.body
         let createdUserID;
-        let query = `insert into login (user_id,password,created_at) values (?,?) `
+        let query = `insert into login (user_id,password,created_at) values (?,?,?) `
         db.query(query, [user_id, password, new Date()], (err, result) => {
             if (err) throw err;
             createdUserID = result.insertId //get the id of record inserted
