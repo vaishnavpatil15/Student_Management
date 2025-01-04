@@ -20,7 +20,10 @@ exports.createUser = async (req,res)=>{
         let query1=`select * from department where id=${dept_id}`
         await db.query(query1,(err)=>{
             if(err) throw err;
-            
+        })
+        let insertQuery = `insert into users (f_name, l_name, user_id,dept_id,created_at) values(?,?,?,?,?)`
+        await db.query(insertQuery,[f_name,l_name,createdUserID,dept_id,now()],(err,result)=>{
+            if(err) throw err;
         })
         res.status(201).json({message:"user created successfully"})
 

@@ -1,0 +1,17 @@
+version: "3"
+services:
+    db:
+        image: mysql
+        ports:
+            - 3306:3306
+        restart: always
+        environment:
+            MYSQL_USER: student
+            MYSQL_PASSWORD: testPass
+            MYSQL_DATABASE: student_management
+            MYSQL_ROOT_PASSWORD: root
+        volumes:
+            - "test_db:/var/lib/mysql"
+
+volumes:
+    test_db:
