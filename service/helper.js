@@ -30,9 +30,9 @@ exports.getObjectUsingCustomerField = async (tableName, filedName, validateData)
     }
 }
 
-exports.getDataUsingRawQuery = async(query)=>{
+exports.getDataUsingRawQuery = async (query) => {
     try {
-         let records = await db.query(query);
+        let records = await db.query(query);
         if (records && records.rows.length > 0) {
             return records.rows
         } else {
