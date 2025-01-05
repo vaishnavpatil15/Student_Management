@@ -1,14 +1,16 @@
-const db = require('../models/db');
+const pool = require('../models/db');
 const helpers = require('../service/helper');
 
 // Add Department
-exports.addDept = (req, res) => {
-    const { name, info } = req.body;
-    const query = "INSERT INTO department (name,info,created_at) VALUES (?,?,?)";
-    db.query(query, [name, info, new Date()], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.status(201).json({ message: "Department added successfully", deptId: result.insertId });
-    });
+exports.addDept = async (req, res) => {
+    try {
+        const { name, info } = req.body;
+        const query = "INSERT INTO department (name,info,created_at) VALUES ($1,$2,$3)";
+        pool.query(query, [name, info, new Date()]);
+        res.status(201).json({ message: "Department added successfully" });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
 };
 
 exports.getDept = async (req, res) => {
@@ -16,39 +18,47 @@ exports.getDept = async (req, res) => {
     const { id } = req.params;
     try {
         let result = await helpers.getObjectUsingId('department', id);
-        return res.status(200).json({ data: result });
+        let data = result && result.rows.length > 0 ? result.rows : []
+        res.status(200).json({ data });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
 };
 
-exports.getAllDept = (req, res) => {
-    const query = "SELECT * FROM department";
-    console.log("Request to get all depts");
+exports.getAllDept = async (req, res) => {
+    try {
+        const query = "SELECT * FROM department";
+        console.log("Request to get all depts");
+        let response = await pool.query(query);
+        let data = response && response.rows.length > 0 ? response.rows : []
+        res.status(200).json({ data });
 
-    db.query(query, (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.status(200).json({ data: result });
-    });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
 };
 
 // Update Department
-exports.updateDept = (req, res) => {
-    const { id } = req.params;
-    const { name } = req.body;
-    const query = "UPDATE department SET name = ? WHERE id = ?";
-    db.query(query, [name, id], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
+exports.updateDept = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name } = req.body;
+        const query = "UPDATE department SET name = $1 WHERE id = $2";
+        await pool.query(query, [name, id])
         res.status(200).json({ message: "Department updated successfully" });
-    });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
 };
 
 // Delete Department
-exports.deleteDept = (req, res) => {
-    const { id } = req.params;
-    const query = "DELETE FROM department WHERE id = ?";
-    db.query(query, [id], (err, result) => {
-        if (err) return res.status(500).json({ error: err.message });
-        res.status(200).json({ message: "Department deleted successfully" });
-    });
+exports.deleteDept = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const query = "DELETE FROM department WHERE id = $1";
+        await pool.query(query, [id]);
+        return res.status(200).json({ message: "Department deleted successfully" });
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
 };

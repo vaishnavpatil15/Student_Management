@@ -1,23 +1,27 @@
-const db = require("../models/db")
+const pool = require("../models/db")
+const helper = require('../service/helper')
 
-exports.createUser = (req, res) => {
+exports.createUser = async (req, res) => {
     try {
         let { f_name, l_name, user_id, dept_id, password } = req.body
         let createdUserID;
-        let query = `insert into login (user_id,password,created_at) values (?,?,?) `
-        db.query(query, [user_id, password, new Date()], (err, result) => {
-            if (err) throw err;
-            createdUserID = result.insertId //get the id of record inserted
-            let query1 = `select * from department where id = ?`
-            db.query(query1,[dept_id], (err) => {
-                if (err) throw err;
-                let insertQuery = `insert into users (f_name, l_name, user_id,dept_id,created_at) values(?,?,?,?,?)`
-                db.query(insertQuery, [f_name, l_name, createdUserID, dept_id, new Date()], (err, result) => {
-                    if (err) throw err;
-                    return res.status(201).json({ message: "user created successfully" });
-                })
-            })
-        })
+        // Validate the department using dept id from request
+        await helper.getObjectUsingId("department", dept_id)
+
+        // Insert a records using request data
+        let query = `insert into login (user_id,password,created_at) values ('${user_id}','${password}',now())`
+        await pool.query(query);
+
+        // Get id of created user using user_id
+        let records = await helper.getObjectUsingCustomerField("login", "user_id", user_id)
+        if (records && records.length > 0) {
+            createdUserID = records[0].id
+            let insertQuery = `insert into users (f_name, l_name, user_id,dept_id,created_at) values('${f_name}','${l_name}',${createdUserID},${dept_id},now())`
+            await pool.query(insertQuery)
+        } else {
+            throw new Error('Failed to create user.')
+        }
+        return res.status(201).json({ message: "user created successfully" });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: err.message })
