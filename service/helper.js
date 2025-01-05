@@ -29,3 +29,16 @@ exports.getObjectUsingCustomerField = async (tableName, filedName, validateData)
         throw error
     }
 }
+
+exports.getDataUsingRawQuery = async(query)=>{
+    try {
+         let records = await db.query(query);
+        if (records && records.rows.length > 0) {
+            return records.rows
+        } else {
+            return []
+        }
+    } catch (error) {
+        throw error
+    }
+}

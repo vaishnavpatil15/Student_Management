@@ -1,5 +1,6 @@
 const pool = require("../models/db")
 const helper = require('../service/helper')
+const _ = require('lodash')
 
 exports.createUser = async (req, res) => {
     try {
@@ -22,6 +23,36 @@ exports.createUser = async (req, res) => {
             throw new Error('Failed to create user.')
         }
         return res.status(201).json({ message: "user created successfully" });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: err.message })
+    }
+}
+
+exports.getUserUsingUserId = async (req, res) => {
+    try {
+        let { userId } = req.params
+        let getUserUsingUserIdQuery = `SELECT * FROM login where user_id = '${userId}'`
+        let data = await helper.getDataUsingRawQuery(getUserUsingUserIdQuery)
+        res.status(200).json({ data });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ error: err.message })
+    }
+}
+
+exports.getAllUsers = async (req, res) => {
+    try {
+        let getAllUserQuery = `SELECT usr.*,lgn.user_id as user_id,lgn.password as password, dept.name as dept_name, dept.info as dept_info from users as usr LEFT JOIN login as lgn ON usr.user_id = lgn.id
+        LEFT JOIN department as dept ON dept.id = usr.dept_id`
+        let data = await helper.getDataUsingRawQuery(getAllUserQuery)
+        data = _.map(data, (item) => {
+            delete item.created_at
+            delete item.updated_at
+            delete item.deleted_at
+            return item
+        })
+        res.status(200).json({ data });
     } catch (err) {
         console.log(err);
         return res.status(500).json({ error: err.message })

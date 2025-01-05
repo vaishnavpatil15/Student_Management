@@ -14,9 +14,9 @@ exports.addDept = async (req, res) => {
 };
 
 exports.getDept = async (req, res) => {
-    console.log(`Request for get department using dept id` + req.params.id);
-    const { id } = req.params;
     try {
+        console.log(`Request for get department using dept id` + req.params.id);
+        const { id } = req.params;
         let result = await helpers.getObjectUsingId('department', id);
         let data = result && result.length > 0 ? result : []
         res.status(200).json({ data });
