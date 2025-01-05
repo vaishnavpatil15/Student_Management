@@ -18,7 +18,7 @@ exports.getDept = async (req, res) => {
     const { id } = req.params;
     try {
         let result = await helpers.getObjectUsingId('department', id);
-        let data = result && result.rows.length > 0 ? result.rows : []
+        let data = result && result.length > 0 ? result : []
         res.status(200).json({ data });
     } catch (err) {
         return res.status(500).json({ error: err.message });
