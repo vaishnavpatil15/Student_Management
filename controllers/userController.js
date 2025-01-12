@@ -4,20 +4,22 @@ const _ = require('lodash')
 
 exports.createUser = async (req, res) => {
     try {
-        let { f_name, l_name, user_id, dept_id, password,email } = req.body
-        let createdUserID;
-        // Validate the department using dept id from request
-        await helper.getObjectUsingId("department", dept_id)
+        console.log("Get request for create user");
 
-        // Insert a records using request data
-        let query = `insert into login (user_id,password,email,created_at) values ('${user_id}','${password}','${email}',now())`
-        await pool.query(query);
+        let { f_name, l_name, login_id } = req.body
+        let createdUserID = login_id
+        // Validate the department using dept id from request
+        // await helper.getObjectUsingId("department", dept_id)
+
+        // // Insert a records using request data
+        // let query = `insert into login (user_id,password,email,created_at) values ('${user_id}','${password}','${email}',now())`
+        // await pool.query(query);
 
         // Get id of created user using user_id
-        let records = await helper.getObjectUsingCustomerField("login", "user_id", user_id)
+        let records = await helper.getObjectUsingCustomerField("login", "id", login_id)
         if (records && records.length > 0) {
             createdUserID = records[0].id
-            let insertQuery = `insert into users (f_name, l_name, user_id,dept_id,created_at) values('${f_name}','${l_name}',${createdUserID},${dept_id},now())`
+            let insertQuery = `insert into users (f_name, l_name, user_id,dept_id,created_at) values('${f_name}','${l_name}',${createdUserID},1,now())`
             await pool.query(insertQuery)
         } else {
             throw new Error('Failed to create user.')
