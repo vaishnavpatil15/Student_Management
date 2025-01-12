@@ -4,13 +4,13 @@ const _ = require('lodash')
 
 exports.createUser = async (req, res) => {
     try {
-        let { f_name, l_name, user_id, dept_id, password } = req.body
+        let { f_name, l_name, user_id, dept_id, password,email } = req.body
         let createdUserID;
         // Validate the department using dept id from request
         await helper.getObjectUsingId("department", dept_id)
 
         // Insert a records using request data
-        let query = `insert into login (user_id,password,created_at) values ('${user_id}','${password}',now())`
+        let query = `insert into login (user_id,password,email,created_at) values ('${user_id}','${password}','${email}',now())`
         await pool.query(query);
 
         // Get id of created user using user_id
@@ -43,7 +43,7 @@ exports.getUserUsingUserId = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
     try {
-        let getAllUserQuery = `SELECT usr.*,lgn.user_id as user_id,lgn.password as password, dept.name as dept_name, dept.info as dept_info from users as usr LEFT JOIN login as lgn ON usr.user_id = lgn.id
+        let getAllUserQuery = `SELECT usr.*,lgn.user_id as user_id,lgn.password as password, lgn.email as email, dept.name as dept_name, dept.info as dept_info from users as usr LEFT JOIN login as lgn ON usr.user_id = lgn.id
         LEFT JOIN department as dept ON dept.id = usr.dept_id`
         let data = await helper.getDataUsingRawQuery(getAllUserQuery)
         data = _.map(data, (item) => {
