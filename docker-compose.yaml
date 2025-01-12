@@ -1,17 +1,19 @@
 version: "3"
-services:
-    db:
-        image: mysql
+services:    
+    in-redis:
+        image: redis
         ports:
-            - 3306:3306
-        restart: always
-        environment:
-            MYSQL_USER: student
-            MYSQL_PASSWORD: testPass
-            MYSQL_DATABASE: student_management
-            MYSQL_ROOT_PASSWORD: root
+            - "6379:6379"
+    postgres:
+        image: postgres
+        ports:
+            - 5442:5432
         volumes:
-            - "test_db:/var/lib/mysql"
-
+            - pg_data:/var/lib/postgresql/data
+        environment:
+            POSTGRES_DB: student_management
+            POSTGRES_PASSWORD: 12345
+            POSTGRES_USER: testUser
+            PGDATA : /var/lib/postgresql/data/pgdata
 volumes:
-    test_db:
+    pg_data:
