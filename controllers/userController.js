@@ -45,6 +45,7 @@ exports.getUserUsingUserId = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
     try {
+        console.log(`Attempting to get all user by user: ${req.user.email}`);
         let getAllUserQuery = `SELECT usr.*,lgn.user_id as user_id,lgn.password as password, lgn.email as email, dept.name as dept_name, dept.info as dept_info from users as usr LEFT JOIN login as lgn ON usr.user_id = lgn.id
         LEFT JOIN department as dept ON dept.id = usr.dept_id`
         let data = await helper.getDataUsingRawQuery(getAllUserQuery)

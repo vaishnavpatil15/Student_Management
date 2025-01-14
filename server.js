@@ -27,3 +27,19 @@ app.listen(PORT, () => {
     console.log(`Server running on port http://localhost:${PORT}`);
     console.log(`Swagger docs available at http://localhost:${PORT}/api-docs`);
 });
+
+process.on("SIGTERM", () => {
+    console.log("SIGTERM received. Shutting down gracefully...");
+    server.close(() => {
+        console.log("Server closed.");
+        process.exit(0);
+    });
+});
+
+process.on("SIGINT", () => {
+    console.log("SIGINT received. Shutting down gracefully...");
+    server.close(() => {
+        console.log("Server closed.");
+        process.exit(0);
+    });
+});
